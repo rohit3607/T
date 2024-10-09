@@ -45,6 +45,31 @@
       "description": "Optional: start message of bot, use HTML parsemode format",
       "value": "Hello {first}\n\nI can store private files in Specified Channel and other users can access it from special link."
     },
+    "USE_SHORTLINK":{
+        "description":"Enter True for enabling this feature",
+        "value": "False",
+        "required": false
+     },
+      "SHORTLINK_API_URL": {
+        "description":"Enter your shortlink url",
+        "value" : "",
+        "required":false
+     },
+      "SHORTLINK_API_KEY":{
+        "description": "Enter your shortlink api key",
+        "value" : "",
+        "required" : false
+     },
+      "VERIFY_EXPIRE": {
+        "description" : "Enter your expiration time 24hr = 86400 12hr = 43200",
+        "value": "86400",
+        "required": false
+      },
+      "TUT_VID": {
+        "description" : "Enter tutorial link url",
+        "value": "https://t.me/How_to_Download_7x/32",
+        "required": false
+      },
     "FORCE_SUB_MESSAGE": {
       "description": "Optional: Force Sub message of bot, use HTML parsemode format",
       "value": "Hello {first}\n\n<b>You need to join in my Channel/Group to use me\n\nKindly Please join Channel</b>"
