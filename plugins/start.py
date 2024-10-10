@@ -36,9 +36,8 @@ async def start_command(client: Client, message: Message):
     if not await present_user(id):
         try:
             await add_user(id)
-        except Exception as e:
-            logging.error(f"Error adding user: {e}")
-            return
+        except:
+            pass
 
     text = message.text
     verify_status = await get_verify_status(id)
@@ -61,7 +60,7 @@ async def start_command(client: Client, message: Message):
                 return await message.reply("Your token is invalid or expired. Try again by clicking /start")
             await update_verify_status(id, is_verified=True, verified_time=120())
             await message.reply(
-                "Your token successfully verified and valid for: 12 Hour", 
+                "Your token successfully verified and valid for: {get_exp_time(VERIFY_EXPIRE)} ", 
                 reply_markup=PREMIUM_BUTTON,
                 protect_content=False, 
                 quote=True
@@ -144,7 +143,7 @@ async def start_command(client: Client, message: Message):
                         [InlineKeyboardButton("Click here", url=link), InlineKeyboardButton('How to use the bot', url=TUT_VID)],  # First row with two buttons
                         [InlineKeyboardButton('BUY PREMIUM', callback_data='buy_prem')]  # Second row with one button
                     ]
-                    await message.reply(f"Your Ads token is expired or invalid. Please verify to access the files.\n\nToken Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\nWhat is the token?\n\nThis is an ads token. If you pass 1 ad, you can use the bot for 24 Hours after passing the ad.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
+                    await message.reply(f"Your Ads token is expired or invalid. Please verify to access the files.\n\nToken Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\nWhat is the token?\n\nThis is an ads token. If you pass 1 ad, you can use the bot for {get_exp_time(VERIFY_EXPIRE)} after passing the ad.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
                     return
 
             try:
