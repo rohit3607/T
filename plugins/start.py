@@ -36,7 +36,7 @@ async def start_command(client: Client, message: Message):
         try:
             await add_user(id)
         except:
-            pass
+            pass
 
     text = message.text
     verify_status = await get_verify_status(id)
@@ -52,24 +52,24 @@ async def start_command(client: Client, message: Message):
 
     if base64_string:
         string = await decode(base64_string)
-
+
         if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
-                await update_verify_status(id, is_verified=False)
-            if "verify_" in message.text:
-                _, token = message.text.split("_", 1)
-                if verify_status['verify_token'] != token:
-                    return await message.reply("Your token is invalid or Expired . Try again by clicking /start")
-                await update_verify_status(id, is_verified=True, verified_time=time.time())
-                if verify_status["link"] == "":
-                    reply_markup = None
-                await message.reply(f"Your token successfully verified and valid for: {get_exp_time(VERIFY_EXPIRE)} ", reply_markup=reply_markup, protect_content=False, quote=True
-            )
-        elif string.startswith("premium"):
-            if not is_premium:
-                # Notify user to get premium
-                await message.reply("Buy premium to access this content\nTo Buy Contact @rohit_1888", reply_markup=PREMIUM_BUTTON2)
-                return
-            
+            await update_verify_status(id, is_verified=False)
+
+        if "verify_" in message.text:
+            _, token = message.text.split("_", 1)
+            if verify_status['verify_token'] != token:
+                return await message.reply("Your token is invalid or expired. Try again by clicking /start")
+            await update_verify_status(id, is_verified=True, verified_time=time.time())
+            if verify_status["link"] == "":
+                reply_markup = None
+            await message.reply(f"Your token is successfully verified and valid for: {get_exp_time(VERIFY_EXPIRE)}", reply_markup=reply_markup, protect_content=False, quote=True)
+
+    elif string.startswith("premium"):
+        if not is_premium:
+            # Notify user to get premium
+            await message.reply("Buy premium to access this content\nTo buy, contact @rohit_1888", reply_markup=PREMIUM_BUTTON2)
+            return
             # Handle premium logic
             try:
                 base64_string = text.split(" ", 1)[1]
