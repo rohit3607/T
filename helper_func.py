@@ -55,6 +55,24 @@ async def decode(base64_string: str) -> str:
         print(f"Failed to decode base64 string: {e}")
         return None
 
+async def decode_base64(data):
+    # Add padding if necessary
+    missing_padding = len(data) % 4
+    if missing_padding != 0:
+        data += '=' * (4 - missing_padding)
+    try:
+        return base64.b64decode(data)
+    except base64.binascii.Error as e:
+        print(f"Failed to decode base64 string: {e}")
+        return None
+
+encoded_string = "your_base64_string_here"
+decoded_data = decode_base64(encoded_string)
+if decoded_data:
+    print("Decoded data:", decoded_data)
+else:
+    print("Decoding failed")
+
 async def get_messages(client, message_ids):
     messages = []
     total_messages = 0
