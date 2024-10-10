@@ -20,7 +20,7 @@ async def is_subscribed(filter, client, update):
     user_id = update.from_user.id
     if user_id in ADMINS:
         return True
-    member_status = ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER
+    member_status = (ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER)
     for channel_id in [FORCE_SUB_CHANNEL, FORCESUB_CHANNEL2]:
         if not channel_id:
             continue
@@ -35,7 +35,7 @@ async def is_subscribed(filter, client, update):
 async def encode(string):
     string_bytes = string.encode("ascii")
     base64_bytes = base64.urlsafe_b64encode(string_bytes)
-    base64_string = (base64_bytes.decode("ascii")).strip("=")
+    base64_string = base64_bytes.decode("ascii").strip("=")
     return base64_string
 
 async def decode(base64_string: str) -> str:
@@ -55,24 +55,6 @@ async def decode(base64_string: str) -> str:
         print(f"Failed to decode base64 string: {e}")
         return None
 
-async def decode_base64(data):
-    # Add padding if necessary
-    missing_padding = len(data) % 4
-    if missing_padding != 0:
-        data += '=' * (4 - missing_padding)
-    try:
-        return base64.b64decode(data)
-    except base64.binascii.Error as e:
-        print(f"Failed to decode base64 string: {e}")
-        return None
-
-encoded_string = "your_base64_string_here"
-decoded_data = decode_base64(encoded_string)
-if decoded_data:
-    print("Decoded data:", decoded_data)
-else:
-    print("Decoding failed")
-
 async def get_messages(client, message_ids):
     messages = []
     total_messages = 0
@@ -89,7 +71,8 @@ async def get_messages(client, message_ids):
                 chat_id=client.db_channel.id,
                 message_ids=temb_ids
             )
-        except:
+        except Exception as e:
+            print(f"Failed to get messages: {e}")
             pass
         total_messages += len(temb_ids)
         messages.extend(msgs)
@@ -105,7 +88,7 @@ async def get_message_id(client, message):
         return 0
     elif message.text:
         pattern = "https://t.me/(?:c/)?(.*)/(\d+)"
-        matches = re.match(pattern,message.text)
+        matches = re.match(pattern, message.text)
         if not matches:
             return 0
         channel_id = matches.group(1)
@@ -116,9 +99,7 @@ async def get_message_id(client, message):
         else:
             if channel_id == client.db_channel.username:
                 return msg_id
-    else:
-        return 0
-    
+    return 0
 
 async def get_verify_status(user_id):
     verify = await db_verify_status(user_id)
@@ -127,19 +108,19 @@ async def get_verify_status(user_id):
 async def update_verify_status(user_id, verify_token="", is_verified=False, verified_time=0, link=""):
     # Get current time in Unix format and add 120 seconds
     current_time = time.time()
-    
+
     # Set the verified_time to current_time + 120 if is_verified is True
     if is_verified:
         verified_time = current_time + 120
-    
+
     # Assuming 'current' is a dictionary representing the user's data
     current = {}
     current['is_verified'] = is_verified
     current['verified_time'] = verified_time
-    
+
     # Save or update the user data with the new verification status
-    # (Implement database saving logic here)
-    
+    await db_update_verify_status(user_id, is_verified=is_verified, verified_time=verified_time, link=link)
+
     return current
 
 async def get_shortlink(url, api, link):
@@ -156,8 +137,6 @@ def get_exp_time(seconds):
             period_value, seconds = divmod(seconds, period_seconds)
             result += f'{int(period_value)}{period_name}'
     return result
-
-
 
 def get_readable_time(seconds: int) -> str:
     count = 0
@@ -179,6 +158,5 @@ def get_readable_time(seconds: int) -> str:
     time_list.reverse()
     up_time += ":".join(time_list)
     return up_time
-
 
 subscribed = filters.create(is_subscribed)
