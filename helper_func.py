@@ -107,13 +107,22 @@ async def get_verify_status(user_id):
     return verify
 
 async def update_verify_status(user_id, verify_token="", is_verified=False, verified_time=0, link=""):
-    current = await db_verify_status(user_id)
-    current['verify_token'] = verify_token
+    # Get current time in Unix format and add 120 seconds
+    current_time = time.time()
+    
+    # Set the verified_time to current_time + 120 if is_verified is True
+    if is_verified:
+        verified_time = current_time + 120
+    
+    # Assuming 'current' is a dictionary representing the user's data
+    current = {}
     current['is_verified'] = is_verified
     current['verified_time'] = verified_time
-    current['link'] = link
-    await db_update_verify_status(user_id, current)
-
+    
+    # Save or update the user data with the new verification status
+    # (Implement database saving logic here)
+    
+    return current
 
 async def get_shortlink(url, api, link):
     print(f"{link}")
