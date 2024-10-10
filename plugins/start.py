@@ -47,8 +47,8 @@ async def start_command(client: Client, message: Message):
 
     try:
         base64_string = text.split(" ", 1)[1]
-    except IndexError:
-        base64_string = None
+    except:
+        return
 
     if base64_string:
         string = await decode(base64_string)
