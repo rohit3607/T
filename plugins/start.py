@@ -1,11 +1,12 @@
+# Don't remove This Line From Here. Tg: @rohit_1888 | @Javpostr
 import asyncio
 import base64
-import sys
 import logging
 import os
 import random
 import re
-import string 
+import string 
+import string as piroayush
 import time
 from pyrogram import Client, filters, __version__
 from pyrogram.enums import ParseMode
@@ -17,11 +18,10 @@ from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL
 from helper_func import subscribed, encode, decode, get_messages, get_shortlink, get_verify_status, update_verify_status, get_exp_time
 from database.database import *
 from database.db_premium import *
+
 from config import *
 
-"""add time in seconds for waiting before delete 
-1 min = 60, 2 min = 60 × 2 = 120, 5 min = 60 × 5 = 300"""
-SECONDS = int(os.getenv("SECONDS", "60"))
+SECONDS = TIME 
 
 # Enable logging
 #logging.basicConfig(level=logging.INFO)
@@ -29,20 +29,21 @@ SECONDS = int(os.getenv("SECONDS", "60"))
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
-    logging.info(f"Received /start command from user ID: {id}")
+    #logging.info(f"Received /start command from user ID: {id}")
 
     if not await present_user(id):
         try:
             await add_user(id)
-        except:
-            pass
+        except Exception as e:
+            logging.error(f"Error adding user: {e}")
+            return
 
     text = message.text
     verify_status = await get_verify_status(id)
     is_premium = await is_premium_user(id)
 
-    #logging.info(f"Verify status: #{verify_status}")
-   # logging.info(f"Is premium: {is_premium}")
+    #logging.info(f"Verify status: {verify_status}")
+    #logging.info(f"Is premium: {is_premium}")
 
     try:
         base64_string = text.split(" ", 1)[1]
@@ -51,24 +52,24 @@ async def start_command(client: Client, message: Message):
 
     if base64_string:
         string = await decode(base64_string)
-
-        if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
-            await update_verify_status(id, is_verified=False)
-
-        if "verify_" in message.text:
-            _, token = message.text.split("_", 1)
+
+        if "verify_" in text:
+            _, token = text.split("_", 1)
             if verify_status['verify_token'] != token:
                 return await message.reply("Your token is invalid or expired. Try again by clicking /start")
-            await update_verify_status(id, is_verified=True, verified_time=time.time())
-            if verify_status["link"] == "":
-                reply_markup = None
-            await message.reply(f"Your token is successfully verified and valid for: {get_exp_time(VERIFY_EXPIRE)}", reply_markup=reply_markup, protect_content=False, quote=True)
-
-    elif string.startswith("premium"):
-        if not is_premium:
-            # Notify user to get premium
-            await message.reply("Buy premium to access this content\nTo buy, contact @rohit_1888", reply_markup=PREMIUM_BUTTON2)
-            return
+            await update_verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['VERIFY_EXPIRE'])
+            await message.reply(
+                "Your token successfully verified and valid for: 12 Hour", 
+                reply_markup=PREMIUM_BUTTON,
+                protect_content=False, 
+                quote=True
+            )
+        elif string.startswith("premium"):
+            if not is_premium:
+                # Notify user to get premium
+                await message.reply("Buy premium to access this content\nTo Buy Contact @rohit_1888", reply_markup=PREMIUM_BUTTON2)
+                return
+            
             # Handle premium logic
             try:
                 base64_string = text.split(" ", 1)[1]
@@ -129,19 +130,29 @@ async def start_command(client: Client, message: Message):
                 except:
                     pass
 
-            
+                if (SECONDS == 0):
+                    return
+                notification_msg = await message.reply(f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be  deleted in {get_exp_time(SECONDS)}. Please save or forward it to your saved messages before it gets deleted.</b>")
+                await asyncio.sleep(SECONDS)    
+                for snt_msg in snt_msgs:    
+                    try:    
+                        await snt_msg.delete()  
+                    except: 
+                        pass    
+                await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
+                return
 
         elif string.startswith("get"):
             if not is_premium:
                 if not verify_status['is_verified']:
-                    token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+                    token = ''.join(random.choices(piroayush.ascii_letters + piroayush.digits, k=10))
                     await update_verify_status(id, verify_token=token, link="")
                     link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://telegram.dog/{client.username}?start=verify_{token}')
                     btn = [
                         [InlineKeyboardButton("Click here", url=link), InlineKeyboardButton('How to use the bot', url=TUT_VID)],  # First row with two buttons
                         [InlineKeyboardButton('BUY PREMIUM', callback_data='buy_prem')]  # Second row with one button
                     ]
-                    await message.reply(f"Your Ads token is expired or invalid. Please verify to access the files.\n\nToken Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\nWhat is the token?\n\nThis is an ads token. If you pass 1 ad, you can use the bot for {get_exp_time(VERIFY_EXPIRE)} after passing the ad.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
+                    await message.reply(f"Your Ads token is expired or invalid. Please verify to access the files.\n\nToken Timeout: {get_exp_time(VERIFY_EXPIRE)}\n\nWhat is the token?\n\nThis is an ads token. If you pass 1 ad, you can use the bot for 24 Hours after passing the ad.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
                     return
 
             try:
@@ -202,7 +213,17 @@ async def start_command(client: Client, message: Message):
                 except:
                     pass
 
-
+                if (SECONDS == 0):
+                    return
+                notification_msg = await message.reply(f"<b>🌺 <u>Notice</u> 🌺</b>\n\n<b>This file will be  deleted in {get_exp_time(SECONDS)}. Please save or forward it to your saved messages before it gets deleted.</b>")
+                await asyncio.sleep(SECONDS)    
+                for snt_msg in snt_msgs:    
+                    try:    
+                        await snt_msg.delete()  
+                    except: 
+                        pass    
+                await notification_msg.edit("<b>Your file has been successfully deleted! 😼</b>")  
+                return
     else:
         try:
             reply_markup = InlineKeyboardMarkup(
@@ -212,16 +233,15 @@ async def start_command(client: Client, message: Message):
                 ]
             )
             await message.reply_photo(
-              photo=START_PIC,
-                caption=START_MSG.format(
-                    first=message.from_user.first_name,
+                 photo=START_PIC,
+               caption=START_MSG.format(
+first=message.from_user.first_name,
                     last=message.from_user.last_name,
                     username=None if not message.from_user.username else '@' + message.from_user.username,
                     mention=message.from_user.mention,
                     id=message.from_user.id
                 ),
-                reply_markup=reply_markup,
-
+                reply_markup=reply_markup,
             )
         except Exception as e:
             print(e)
@@ -233,7 +253,8 @@ WAIT_MSG = """"<b>Processing ...</b>"""
 REPLY_ERROR = """<code>Use this command as a replay to any telegram message with out any spaces.</code>"""
 
 #=====================================================================================##
-
+
+# Don't remove This Line From Here. Tg: @rohit_1888 | @Javpostr
     
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
@@ -264,8 +285,7 @@ async def not_joined(client: Client, message: Message):
                 mention = message.from_user.mention,
                 id = message.from_user.id
             ),
-        reply_markup = InlineKeyboardMarkup(buttons),
-
+        reply_markup = InlineKeyboardMarkup(buttons),
     )
 
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
