@@ -24,7 +24,7 @@ from config import *
 SECONDS = int(os.getenv("SECONDS", "60"))
 
 # Enable logging
-logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.INFO)
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
@@ -41,8 +41,8 @@ async def start_command(client: Client, message: Message):
     verify_status = await get_verify_status(id)
     is_premium = await is_premium_user(id)
 
-    logging.info(f"Verify status: {verify_status}")
-    logging.info(f"Is premium: {is_premium}")
+    #logging.info(f"Verify status: #{verify_status}")
+   # logging.info(f"Is premium: {is_premium}")
 
     try:
         base64_string = text.split(" ", 1)[1]
