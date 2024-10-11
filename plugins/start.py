@@ -22,7 +22,9 @@ from database.db_premium import *
 from config import *
 
 #SECONDS = TIME 
-
+"""add time in seconds for waiting before delete 
+1 min = 60, 2 min = 60 × 2 = 120, 5 min = 60 × 5 = 300"""
+SECONDS = int(os.getenv("SECONDS", "1200"))
 # Enable logging
 #logging.basicConfig(level=logging.INFO)
 
