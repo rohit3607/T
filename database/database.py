@@ -34,12 +34,7 @@ async def add_user(user_id: int):
     user = new_user(user_id)
     user_data.insert_one(user)
     return
-
-async def db_verify_status(user_id):
-    user = user_data.find_one({'_id': user_id})
-    if user:
-        return user.get('verify_status', default_verify)
-    return default_verify
+
 
 async def db_verify_status(user_id):
     user = await user_data.find_one({'_id': user_id})
@@ -49,6 +44,9 @@ async def db_verify_status(user_id):
                 'verify_token': user.get('verify_status', {}).get('verify_token', ''),
                 'link': user.get('verify_status', {}).get('link', '')}
     return {'is_verified': False, 'verified_time': 0, 'verify_token': '', 'link': ''}
+
+async def db_update_verify_status(user_id, verify):
+    user_data.update_one({'_id': user_id}, {'$set': {'verify_status': verify}})
 
 async def full_userbase():
     user_docs = user_data.find()
