@@ -23,15 +23,7 @@ default_verify = {
 }
 
 def new_user(id):
-    return {
-        '_id': id,
-        'verify_status': {
-            'is_verified': False,
-            'verified_time': "",
-            'verify_token': "",
-            'link': ""
-        }
-    }
+    return {'is_verified': verify['is_verified'], 'verified_time': int(verify['verified_time']), 'verify_token': verify['verify_token'], 'link': verify['link']}
 
 
 async def present_user(user_id : int):
@@ -49,8 +41,14 @@ async def db_verify_status(user_id):
         return user.get('verify_status', default_verify)
     return default_verify
 
-async def db_update_verify_status(user_id, verify):
-    user_data.update_one({'_id': user_id}, {'$set': {'verify_status': verify}})
+async def db_verify_status(user_id):
+    user = await user_data.find_one({'_id': user_id})
+    if user:
+        return {'is_verified': user.get('verify_status', {}).get('is_verified', False),
+                'verified_time': int(user.get('verify_status', {}).get('verified_time', 0)),
+                'verify_token': user.get('verify_status', {}).get('verify_token', ''),
+                'link': user.get('verify_status', {}).get('link', '')}
+    return {'is_verified': False, 'verified_time': 0, 'verify_token': '', 'link': ''}
 
 async def full_userbase():
     user_docs = user_data.find()
