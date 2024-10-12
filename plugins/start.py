@@ -18,8 +18,20 @@ from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL
 from helper_func import subscribed, encode, decode, get_messages, get_shortlink, get_verify_status, update_verify_status, get_exp_time
 from database.database import *
 from database.db_premium import *
-
+from datetime import datetime
 from config import *
+
+def convert_unix_to_human_readable(unix_timestamp):
+    return datetime.fromtimestamp(unix_timestamp).strftime('%Y-%m-%d %H:%M:%S')
+
+async def check_verification(user_id):
+    verify_status = await get_verify_status(user_id)
+    if verify_status['is_verified']:
+        verified_time = convert_unix_to_human_readable(verify_status['verified_time'])
+        print(f"User verified at {verified_time}")
+    else:
+        print("User not verified")
+
 
 #SECONDS = TIME 
 """add time in seconds for waiting before delete 
