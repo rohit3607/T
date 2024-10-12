@@ -121,6 +121,16 @@ async def get_message_id(client, message):
     else:
         return 0
 
+def convert_unix_to_human_readable(unix_timestamp):
+    return datetime.fromtimestamp(unix_timestamp).strftime('%Y-%m-%d %H:%M:%S')
+
+async def check_verification(user_id):
+    verify_status = await get_verify_status(user_id)
+    if verify_status['is_verified']:
+        verified_time = convert_unix_to_human_readable(verify_status['verified_time'])
+        print(f"User verified at {verified_time}")
+    else:
+        print("User not verified")
 
 def get_readable_time(seconds: int) -> str:
     count = 0
