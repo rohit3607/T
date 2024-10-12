@@ -151,7 +151,8 @@ async def update_verify_status(user_id, verify_token="", is_verified=False, veri
     current = await db_verify_status(user_id)
     current['verify_token'] = verify_token
     current['is_verified'] = is_verified
-    current['verified_time'] = int(verified_time)
+    if is_verified:
+        current['verified_time'] = int(time.time())
     current['link'] = link
     await db_update_verify_status(user_id, current)
 
