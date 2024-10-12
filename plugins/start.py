@@ -31,7 +31,7 @@ SECONDS = int(os.getenv("SECONDS", "1200"))
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
-    #logging.info(f"Received /start command from user ID: {id}")
+    logging.info(f"Received /start command from user ID: {id}")
 
     if not await present_user(id):
         try:
@@ -44,8 +44,8 @@ async def start_command(client: Client, message: Message):
     verify_status = await get_verify_status(id)
     is_premium = await is_premium_user(id)
 
-    #logging.info(f"Verify status: {verify_status}")
-    #logging.info(f"Is premium: {is_premium}")
+    logging.info(f"Verify status: {verify_status}")
+    logging.info(f"Is premium: {is_premium}")
 
     try:
         base64_string = text.split(" ", 1)[1]
@@ -59,7 +59,7 @@ async def start_command(client: Client, message: Message):
             _, token = text.split("_", 1)
             if verify_status['verify_token'] != token:
                 return await message.reply("Your token is invalid or expired. Try again by clicking /start")
-            await update_verify_status['is_verified'] and VERIFY_EXPIRE > (time.time() - verify_status['VERIFY_EXPIRE'])
+            await update_verify_status['is_verified'] and VERIFY_EXPIRE < int(time.time() - verify_status['VERIFY_EXPIRE'])
             await message.reply(
                 "Your token successfully verified and valid for: 12 Hour", 
                 reply_markup=PREMIUM_BUTTON,
