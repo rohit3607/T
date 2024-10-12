@@ -21,16 +21,38 @@ from database.db_premium import *
 from datetime import datetime
 from config import *
 
-def convert_unix_to_human_readable(unix_timestamp):
-    return datetime.fromtimestamp(unix_timestamp).strftime('%Y-%m-%d %H:%M:%S')
+# Import necessary modules
+from database import get_verify_status
+from datetime import datetime
 
+# Function to convert Unix timestamp to human-readable format
+def convert_unix_to_human_readable(unix_timestamp):
+    # Add a print statement to debug the conversion
+    print(f"Converting Unix timestamp: {unix_timestamp}")
+    readable_time = datetime.fromtimestamp(unix_timestamp).strftime('%Y-%m-%d %H:%M:%S')
+    print(f"Converted to readable time: {readable_time}")
+    return readable_time
+
+# Asynchronous function to check verification
 async def check_verification(user_id):
     verify_status = await get_verify_status(user_id)
+    # Print the raw verify_status for debugging
+    print(f"Verify status: {verify_status}")
     if verify_status['is_verified']:
         verified_time = convert_unix_to_human_readable(verify_status['verified_time'])
         print(f"User verified at {verified_time}")
     else:
         print("User not verified")
+
+# Main function or entry point
+if __name__ == "__main__":
+    import asyncio
+
+    async def main():
+        user_id = 'example_user_id'  # Replace with the actual user ID
+        await check_verification(user_id)
+
+    asyncio.run(main())
 
 
 #SECONDS = TIME 
